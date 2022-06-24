@@ -1,4 +1,0 @@
-User-agent:*
-Disallow:/tmp/
-Disallow: /cgi-bin/
-Sitemap: http://www.my-domain.com/sitemap.xml
