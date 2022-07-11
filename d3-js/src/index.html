@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D3 training</title>
+    <!-- Apply specific style to the elements that have the class `inGreen` -->
+    <style>
+      body > *:not(script) {
+        display: block;
+      }
+
+      .dragging {
+        cursor: grabbing;
+      }
+
+      .bar-title-rect,
+      .bar-title {
+        cursor: pointer;
+      }
+
+      .bar-title {
+        font-size: 0.7rem;
+        fill: #4c4e50;
+      }
+
+      .bar-title:hover {
+        fill: brown;
+        box-shadow: 2px 4px 2px 0px rgba(50, 50, 50, 0.45);
+      }
+
+      .bar-title-rect:hover {
+        stroke-width: 1px;
+      }
+    </style>
+
+    <!-- Load d3.js -->
+    <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
+    <script src="./libs/d3.v7.min.js"></script>
+    <!-- <link rel="stylesheet" href="./styles/index.css" /> -->
+  </head>
+  <body>
+    <h1>D3 training</h1>
+
+    <!-- Create a div where the graph will take place -->
+    <div id="chart-container"></div>
+  </body>
+  <script type="module" src="./index.js"></script>
+</html>

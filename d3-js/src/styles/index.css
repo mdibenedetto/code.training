@@ -1,0 +1,70 @@
+.x .tick text,
+.y .tick text {
+  font-size: 15.486px;
+  line-height: 23.184px;
+  fill: #7f8281;
+}
+.y .tick line {
+  stroke: #fff;
+}
+.x .tick line {
+  stroke: #949797;
+}
+
+.x path,
+.y path {
+  stroke: #949797;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  shape-rendering: crispEdges;
+}
+
+.minor {
+  fill: none;
+  shape-rendering: crispEdges;
+}
+
+.xlabel,
+.ylabel {
+  font-size: 17.664px;
+  line-height: 26.496px;
+  fill: #55595b;
+}
+
+div.tooltip {
+  position: absolute;
+  font-size: 12.486px;
+  color: #4c4e50;
+  border-color: #cccecf;
+  border-width: 1px;
+  border-style: solid;
+  background: #fff;
+  border-radius: 2px;
+  padding: 5px;
+  min-width: 70px;
+}
+
+.tooltip:hover {
+  -webkit-box-shadow: 2px 4px 2px 0px rgba(50, 50, 50, 0.45);
+  box-shadow: 2px 4px 2px 0px rgba(50, 50, 50, 0.45);
+}
+
+svg image {
+  cursor: pointer;
+  cursor: -webkit-grab;
+}
+
+svg image.dragging {
+  cursor: -webkit-grabbing;
+}
+.ylabel {
+  position: absolute;
+  -ms-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  width: 300px;
+  text-align: center;
+}
