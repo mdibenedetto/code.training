@@ -1,4 +1,4 @@
 /// <reference path="../index.d.ts"/>
 // @ts-check
 
-import './bar-char.js';
+import './bar-chart/bar-chart.js';

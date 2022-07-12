@@ -1,29 +1,9 @@
+import { barColors, barHoverColors } from './bar-colors.js';
+
 // set the dimensions and margins of the graph
 const margin = { top: 30, right: 30, bottom: 70, left: 60 },
   width = 460 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
-
-const barColors = [
-  '#00a3c0',
-  '#fb6400',
-  '#4fa80c',
-  '#ed4f93',
-  '#f2a800',
-  '#30af93',
-  '#a57ae0',
-  '#ff261f',
-];
-
-const barHoverColors = [
-  '#008097',
-  '#d64c0a',
-  '#378500',
-  '#af2d66',
-  '#a66900',
-  '#07826b',
-  '#8756c1',
-  '#ed0800',
-];
 
 const Y_TICKET_SIZE = 6;
 
@@ -90,13 +70,10 @@ const dataTicks = svg.selectAll('g.tick');
 const DIVISION_TICK_LINE_COLOR = '#949797';
 const SINGLE_TICK_LINE_COLOR = '#e5e6e7';
 
-//  d3.scaleBand().range(yTickValues);
 const yBarGrGoup = svg.select('g.y-axis');
 const yBarTick = yBarGrGoup.selectAll('g line');
 
-const setYBarTickAttr = (i, value) => {
-  return i > 0 ? value : null;
-};
+const setYBarTickAttr = (i, value) => (i > 0 ? value : null);
 
 yBarTick
   .attr('stroke', (d, i) => setYBarTickAttr(i, DIVISION_TICK_LINE_COLOR))
@@ -107,16 +84,19 @@ yBarTick
 // =================================================================
 // Bars GROUP
 // =================================================================
-const barGroup = svg.append('g').attr('class', 'rect-bar-group');
+const barGroupArea = svg.append('g').attr('class', 'bar-group-area');
+const barGroups = barGroupArea
+  .selectAll()
+  .data(data)
+  .join('g')
+  .attr('class', 'bar-groups');
 
 // =================================================================
 // Bars rect
 // =================================================================
 
-const bars = barGroup
-  .selectAll('bars')
-  .data(data)
-  .join('rect')
+const bars = barGroups
+  .append('rect')
   .attr('class', 'rect-bar')
   .attr('id', (d, i) => 'rect-' + i)
   .attr('data-index', (d, i) => i)
@@ -127,13 +107,12 @@ const bars = barGroup
   .attr('opacity', 0.7)
   .call(fillColors)
   .call(handleMouseEvent);
+
 // =================================================================
 // Top rect lines
 // =================================================================
-const rectLine = barGroup
-  .selectAll('bar-line')
-  .data(data)
-  .join('rect')
+const rectLine = barGroups
+  .append('rect')
   .attr('class', 'bar-top-border')
   .attr('id', (d, i) => 'bar-top-border-' + i)
   .attr('data-index', (d, i) => i)
@@ -146,10 +125,8 @@ const rectLine = barGroup
 // =================================================================
 // Top rect circles
 // =================================================================
-const rectCircle = barGroup
-  .selectAll('bar-circle')
-  .data(data)
-  .join('circle')
+const rectCircle = barGroups
+  .append('circle')
   .attr('id', (d, i) => 'bar-circle-' + i)
   .attr('data-index', (d, i) => i)
   .attr('cx', (d) => xScale(d.Country) + xScale.bandwidth() / 2)
@@ -165,7 +142,7 @@ const handleDragEvent = d3
   .drag()
   .on('start', function (event, d) {
     svg.classed('dragging', true);
-    debugger;
+
     const i = +d3.select(this).attr('data-index');
     console.log('==dragger: start');
   })
@@ -183,11 +160,11 @@ rectCircle.call(handleDragEvent);
 // Tooltips
 // =================================================================
 const TOOLTIP_CONTAINER_POS_Y_OFFSET = 44;
-const TOOLTIP_POS_Y_OFFSET = (TOOLTIP_CONTAINER_POS_Y_OFFSET / 3) * 2;
-barGroup
-  .selectAll('bar-title-rect')
-  .data(data)
-  .join('rect')
+const TOOLTIP_CONTAINER_HEIGHT = 20;
+const TOOLTIP_FONT_SIZE = 12;
+
+barGroups
+  .append('rect')
   .attr('class', 'bar-title-rect')
   .attr('fill', 'white')
   .attr('stroke-width', '0.5')
@@ -196,18 +173,24 @@ barGroup
   .attr('x', (d) => xScale(d.Country))
   .attr('y', (d) => yScale(d.Value) - TOOLTIP_CONTAINER_POS_Y_OFFSET)
   .attr('width', xScale.bandwidth())
-  .attr('height', '20px');
+  .attr('height', TOOLTIP_CONTAINER_HEIGHT);
 
-barGroup
-  .selectAll('bar-title')
-  .data(data)
-  .join('text')
+barGroups
+  .append('text')
   .attr('class', 'bar-title')
   .attr('id', (d, i) => 'bar-title-' + i)
   .attr('data-index', (d, i) => i)
-  .attr('x', (d) => xScale.bandwidth() / 4 + xScale(d.Country))
-  .attr('y', (d) => yScale(d.Value) - TOOLTIP_POS_Y_OFFSET)
-
+  .attr('text-anchor', 'middle')
+  .attr('x', (d) => xScale(d.Country) + xScale.bandwidth() / 2)
+  .attr(
+    'y',
+    (d) =>
+      yScale(d.Value) -
+      TOOLTIP_CONTAINER_POS_Y_OFFSET +
+      TOOLTIP_CONTAINER_HEIGHT / 2 +
+      TOOLTIP_FONT_SIZE / 3
+  )
+  .style('font-size', TOOLTIP_FONT_SIZE + 'px')
   .text((d) => d.Value);
 
 // single tooltip
