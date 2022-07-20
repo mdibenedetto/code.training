@@ -76,6 +76,7 @@ const yBarTick = yBarGrGoup.selectAll('g line');
 const setYBarTickAttr = (i, value) => (i > 0 ? value : null);
 
 yBarTick
+  .attr('class', 'x-division-line')
   .attr('stroke', (d, i) => setYBarTickAttr(i, DIVISION_TICK_LINE_COLOR))
   .attr('stroke-width', 0.5)
   .attr('x1', -Y_TICKET_SIZE)
@@ -98,7 +99,7 @@ const barGroups = barGroupArea
 const bars = barGroups
   .append('rect')
   .attr('class', 'rect-bar')
-  .attr('id', (d, i) => 'rect-' + i)
+  .attr('id', (d, i) => 'rect-bar-' + i)
   .attr('data-index', (d, i) => i)
   .attr('x', (d) => xScale(d.Country))
   .attr('y', (d) => yScale(d.Value))
@@ -147,7 +148,131 @@ const handleDragEvent = d3
     console.log('==dragger: start');
   })
   .on('drag', function (event, d) {
-    console.log('==dragger: drag');
+    // console.log('==dragger: drag');
+
+    // const { y, sourceEvent } = event;s
+    // console.log('==dragger: drag', y, sourceEvent);
+
+    const index = d3.select(this).attr('data-index');
+    const circleId = d3.select(this).attr('id');
+
+    const getCoordindates = (cssTransform = '') => {
+      const REGEX = /(?<=translate\(0,)(.*?)(?=\))/g;
+      const yCoordinate = cssTransform.match(REGEX)?.[0];
+
+      return +yCoordinate;
+    };
+
+    // const minorLines = document.querySelectorAll('.x-division-line');
+    const minorLines = document.querySelectorAll('.y-axis .tick');
+
+    const y0 = getCoordindates(minorLines[0].getAttribute('transform'));
+    const y1 = getCoordindates(minorLines[1].getAttribute('transform'));
+
+    const range = parseInt((y0 - y1) / 2);
+
+    const oldY =
+      parseFloat(d3.select('#rect-bar-' + index).attr('y')) -
+      parseFloat(event.y);
+    const oldHeight = parseInt(d3.select('#rect-bar-' + index).attr('height'));
+    const newHeight = oldHeight;
+    const currentYY = parseInt(event.y);
+    let currentLineY;
+    const chartHeight = height;
+    const numberOfLines = minorLines.length;
+    // const selectedTooltip = document.querySelector('#tooltip' + circleIndex);
+    // const tooltipHeight = selectedTooltip.getBoundingClientRect().height;
+    // debugger
+    for (let i = 0; i < minorLines.length; i++) {
+      currentLineY = getCoordindates(minorLines[i].getAttribute('transform'));
+      //=========================================================================
+
+      // drag goes before the end of x axis
+      if (
+        parseInt(currentLineY) + parseInt(range) >= parseInt(currentYY) &&
+        parseInt(currentLineY) - parseInt(range) <= parseInt(currentYY)
+      ) {
+        if (currentLineY >= 0 && currentLineY <= height) {
+          console.log('==== IF 1');
+
+          d3.select(this).attr('y', currentLineY);
+          d3.select('#bar-circle-' + index).attr('cy', currentLineY);
+          d3.select('#rect-bar-' + index)
+            .attr('y', currentLineY)
+            .attr('height', height - currentLineY);
+          d3.select('#bar-top-border-' + index).attr('y', currentLineY);
+
+          //=========================================================================
+          // handle Tooltip
+          //=========================================================================
+          // const matrix = this.getScreenCTM().translate(
+          //   +d3.select('#bar-circle-' + circleIndex).attr('cx'),
+          //   currentLineY
+          // );
+
+          // d3.select('#tooltip' + circleIndex)
+          //   .html(
+          //     parseFloat(
+          //       (i + 1) * ((maxYscale - minYscale) / numberOfLines) + minYscale
+          //     ).toFixed(decimalPlaces) +
+          //       ' ' +
+          //       yUnit
+          //   )
+          //   .style(
+          //     'left',
+          //     window.pageXOffset + matrix.e - xScale.bandwidth() / 2 + 'px'
+          //   )
+          //   .style(
+          //     'top',
+          //     window.pageYOffset + matrix.f - 20 - tooltipHeight + 'px'
+          //   )
+          //   .style('opacity', 1);
+        }
+      }
+
+      //=========================================================================
+      // handle the case beyond the first
+      //=========================================================================
+
+      if (
+        parseInt(chartHeight) + parseInt(range) >= parseInt(currentYY) &&
+        parseInt(chartHeight) - parseInt(range) <= parseInt(currentYY)
+      ) {
+        console.log('==== IF 2.A');
+        if (chartHeight >= 0 && chartHeight <= height) {
+          console.log('==== IF 2.B');
+
+          d3.select(this).attr('y', chartHeight);
+          d3.select('#bar-circle-' + index).attr('cy', chartHeight);
+          d3.select('#rect-bar-' + index)
+            .attr('y', chartHeight)
+            .attr('height', height - chartHeight);
+          d3.select('#bar-top-border-' + index).attr('y', chartHeight - 1);
+
+          //=========================================================================
+          // handle Tooltip
+          //=========================================================================
+
+          // var matrix = this.getScreenCTM().translate(
+          //   +d3.select('#circle' + circleIndex).attr('cx'),
+          //   xAxis
+          // );
+
+          // d3.select('#tooltip' + circleIndex)
+          //   .html(minYscale + ' ' + yUnit)
+          //   .style(
+          //     'left',
+          //     window.pageXOffset + matrix.e - xScale.bandwidth() / 2 + 'px'
+          //   )
+          //   .style(
+          //     'top',
+          //     window.pageYOffset + matrix.f - 20 - tooltipHeight + 'px'
+          //   )
+          //   .style('opacity', 1);
+        }
+      }
+      //=========================================================================
+    }
   })
   .on('end', function (event, d) {
     svg.classed('dragging', false);
